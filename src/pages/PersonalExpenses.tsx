@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 
 import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import DataGridExpenses from "../component/DataGridExpenses";
 import FilterBar from "../component/FilterBar";
 import { getExpensesEndpoint, IExpenses } from "../service/backend";
@@ -36,7 +37,7 @@ const columns: GridColDef[] = [
 ];
 
 function sumExpenses(expenses: IExpenses[]): number {
-  return expenses
+  return expenses.length > 0
     ? expenses.reduce((a, b) => {
         return { ...a, valor: a.valor + b.valor };
       }).valor
@@ -46,7 +47,11 @@ function sumExpenses(expenses: IExpenses[]): number {
 export default function PersonalExpenses() {
   const [expenses, setExpenses] = useState<GridRowsProp>([]);
   const [totalExpenses, setTotalExpenses] = useState<string>("0");
-  const [dateString, setDateString] = useState<string>("2021-01");
+  const [dateString, setDateString] = useState<string>(
+    useParams<string>().srDate!
+  );
+
+  let navigate = useNavigate();
 
   useEffect(() => {
     function getExpensesData(date: string): void {
@@ -61,12 +66,17 @@ export default function PersonalExpenses() {
     }
 
     getExpensesData(dateString);
-  }, [dateString]);
+    navigate(`../${dateString}`, { replace: true });
+  }, [dateString, navigate]);
 
   return (
     <Box>
-      <FilterBar totalExpenses={totalExpenses} onChangeFilter={setDateString} />
-      <Box height={"940px"}>
+      <FilterBar
+        totalExpenses={totalExpenses}
+        dateString={useParams<string>().srDate!}
+        onChangeFilter={setDateString}
+      />
+      <Box height={"940px"} sx={{ paddingLeft: "20px", paddingRight: "20px" }}>
         <DataGridExpenses rows={expenses} columns={columns} />
       </Box>
     </Box>

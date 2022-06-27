@@ -11,10 +11,15 @@ import React, { useEffect, useState } from "react";
 
 export default function FilterBar(props: {
   totalExpenses: string;
+  dateString: string;
   onChangeFilter: (date: string) => void;
 }) {
-  const [anoString, setAnoString] = useState<string>("2021");
-  const [mesString, setMesString] = useState<string>("01");
+  const [anoString, setAnoString] = useState<string>(
+    props.dateString.split("-")[0]
+  );
+  const [mesString, setMesString] = useState<string>(
+    props.dateString.split("-")[1]
+  );
 
   const onChangeSelect = props.onChangeFilter;
   const totalExpenses = props.totalExpenses;
@@ -42,6 +47,7 @@ export default function FilterBar(props: {
           color: "black",
           paddingTop: 2,
           paddingBottom: 2,
+          paddingRight: "10px",
         }}
       >
         <Box>
